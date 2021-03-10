@@ -2,14 +2,13 @@ package azurerules
 
 import input as tfplan
 default allow  = false
-allow = true{
+allow = true {
     count(nsg_inbound_22) == 0
 }
 
 nsg_rule = false {
     count(nsg_inbound_22) !=0
 }
-
 nsg_inbound_22[resource_name] {
     nsg_rules1 := tfplan[_]
     resource_name := nsg_rules1.address
@@ -28,6 +27,7 @@ sa_https[resource_name] {
     sa_https_access.type == "azurerm_storage_account"
     sa_https_access.change.after.enable_https_traffic_only == false
 }
+
 storage_container_access = false {
     count(sc_type) != 0
 }
@@ -36,4 +36,16 @@ sc_type[resource_name] {
     resource_name := sc_type_access.address
     sc_type_access.type == "azurerm_storage_container"
     sc_type_access.change.after.container_access_type != "private"
+}
+
+sql_server_firewall = false {
+    count(sqlserver_startip) != 0
+}
+sqlserver_startip[resource_name] {
+    sql_ip := tfplan[_]
+    resource_name := sql_ip.address
+    sql_ip.type == "azurerm_sql_firewall_rule"
+    any([sql_ip.change.after.start_ip_address == "0.0.0.0",
+    sql_ip.change.after.end_ip_address ==  "0.0.0.0",
+    sql_ip.change.after.end_ip_address == "255.255.255.255"])
 }
