@@ -53,3 +53,19 @@ resource "azurerm_storage_account" "teststorageaccount1" {
 #  storage_account_name    = azurerm_storage_account.teststorageaccount1.name
 #  container_access_type   = "private"
 #}
+resource "azurerm_sql_server" "newsqlserver" {
+    name                         = "mysqlserver"
+    resource_group_name          = var.resource_group_name
+    location                     = var.location
+    version                      = "12.0"
+    administrator_login = "4dm1n157r470r"
+    administrator_login_password = random_string.userPassword.result 
+}
+
+resource "azurerm_sql_firewall_rule" "invalidrule1" {
+  name                = "invalidrule1"
+  resource_group_name = var.resource_group_name
+  server_name         = azurerm_sql_server.newsqlserver.name
+  start_ip_address    = "0.0.0.0"
+  end_ip_address      = "10.0.17.62"
+}
