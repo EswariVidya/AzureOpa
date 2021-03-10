@@ -55,7 +55,7 @@ resource "azurerm_storage_account" "teststorageaccount1" {
 #}
 resource "azurerm_sql_server" "newsqlserver" {
     name                         = "mysqlserver"
-    resource_group_name          = var.resource_group_name
+    resource_group_name          = var.resource_gp_name
     location                     = var.location
     version                      = "12.0"
     administrator_login = "4dm1n157r470r"
@@ -64,7 +64,7 @@ resource "azurerm_sql_server" "newsqlserver" {
 
 resource "azurerm_sql_firewall_rule" "invalidrule1" {
   name                = "invalidrule1"
-  resource_group_name = var.resource_group_name
+  resource_group_name = var.resource_gp_name
   server_name         = azurerm_sql_server.newsqlserver.name
   start_ip_address    = "0.0.0.0"
   end_ip_address      = "10.0.17.62"
