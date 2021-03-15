@@ -42,6 +42,7 @@ resource "azurerm_storage_account" "teststorageaccount1" {
   account_tier              = "Standard"
   account_replication_type  = "LRS"
   enable_https_traffic_only = false
+  allow_blob_public_access  = true 
 }
 
 #resource "azurerm_storage_container" "testcontainer" {
