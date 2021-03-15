@@ -42,16 +42,12 @@ resource "azurerm_storage_account" "teststorageaccount1" {
   account_tier              = "Standard"
   account_replication_type  = "LRS"
   enable_https_traffic_only = false
-
-  network_rules {
-    default_action          = "Deny"
-  }
 }
 
 #resource "azurerm_storage_container" "testcontainer" {
 #  name                    = "decsecopsstoragecontainer"
 #  storage_account_name    = azurerm_storage_account.teststorageaccount1.name
-#  container_access_type   = "private"
+#  container_access_type   = "blob"
 #}
 resource "azurerm_sql_server" "newsqlserver" {
     name                         = "mysqlserver"
