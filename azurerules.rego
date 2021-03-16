@@ -1,21 +1,23 @@
 package azurerules
 
 import input as tfplan
-default allow  = false
+default allow = false
 allow = true {
-    count(nsg_inbound_22) == 0
+    count(nsg_inbound) == 0
 }
 
 nsg_rule = false {
-    count(nsg_inbound_22) !=0
+    count(nsg_inbound) !=0
 }
-nsg_inbound_22[resource_name] {
+nsg_inbound[resource_name] {
     nsg_rules1 := tfplan[_]
     resource_name := nsg_rules1.address
     nsg_rules1.type == "azurerm_network_security_group"
-    #nsg_rules1.change.after.security_rule[_].access == "allow"
-    nsg_rules1.change.after.security_rule[_].destination_port_range == "22"
+    nsg_rules1.change.after.security_rule[_].access == "Allow"
     nsg_rules1.change.after.security_rule[_].direction == "Inbound"
+    any([nsg_rules1.change.after.security_rule[_].destination_port_range == "22",
+        nsg_rules1.change.after.security_rule[_].destination_port_range == "3389",
+        nsg_rules1.change.after.security_rule[_].destination_port_range == "*"])
 }
 
 storage_account_https = false {
