@@ -3,6 +3,7 @@ pool:
 variables:
   group: Pipeline variables
   tfBackendFileName: terraform.tfstate
+  oparule: storage_account_https
 stages:
 - stage: Build
   jobs:
@@ -30,7 +31,7 @@ stages:
                jq -r ".resource_changes | map ({(.address|tostring) : .}) | add" tfplancomplete.json > tfplan.json
                cat tfplan.json
                echo "#############     OPA checks         ###############" 
-               ./opa eval --fail-defined --data azurerules.rego --input tfplan.json "data.azurerules.storage_account_https" > oparesult.json
+               ./opa eval --fail-defined --data azurerules.rego --input tfplan.json "data.azurerules.$(oparule)" > oparesult.json
                cat oparesult.json
         - task: PowerShell@2
           displayName: OPA - Terraform apply
@@ -38,7 +39,7 @@ stages:
             targetType: 'inline'
             script: |
                 # Write your PowerShell commands here.
-                $OPAresult = $(./opa eval --fail-defined --data azurerules.rego --input tfplan.json "data.azurerules.storage_account_https" | convertFrom-Json)
+                $OPAresult = $(./opa eval --fail-defined --data azurerules.rego --input tfplan.json "data.azurerules.$(oparule)" | convertFrom-Json)
                 $resultvalue = $OPAresult.result.expressions.value
                 $rule = $OPAresult.result.expressions.text
                 $plan = $(terraform show -json tfplan.output | ConvertFrom-Json)
