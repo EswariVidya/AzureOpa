@@ -19,3 +19,8 @@ resource "random_string" "userPassword" {
   min_special = 1
   override_special = "$%_-#@"
 }
+resource "random_string" "name" {
+  length = 8
+  special = false
+  min_lower   = 8
+}
