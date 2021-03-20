@@ -3,7 +3,8 @@ pool:
 variables:
   group: Pipeline variables
   tfBackendFileName: terraform.tfstate
-  oparule: sql_server_firewall
+  oparule: storage_account
+  
 stages:
 - stage: Build
   jobs:
@@ -12,11 +13,9 @@ stages:
         - task: TerraformInstaller@0
           inputs:
             terraformVersion: '0.14.8'
+            
         - script:  az login -u $(userlogin_name) -p $(userlogin_password)
           displayName: "Log Into Azure"
-        
-        #- script: terraform init -backend-config="storage_account_name=$(StorageAccountName)" -backend-config="container_name=$(ContainerName)" -backend-config="access_key=$(storageaccesskey)" -backend-config="key=$(tfBackendFileName)"
-        #  displayName: "Terraform init"
         
         - task: TerraformTaskV1@0
           inputs:
@@ -27,8 +26,6 @@ stages:
             backendAzureRmStorageAccountName: '$(StorageAccountName)'
             backendAzureRmContainerName: '$(ContainerName)'
             backendAzureRmKey: 'terraform.tfstate'
-            
-        #- script: terraform force-unlock -force 4c7c6b8b-1da6-14d6-c503-d897e8c87401
 
         - task: TerraformTaskV1@0
           inputs:
@@ -37,9 +34,7 @@ stages:
             workingDirectory: '$(System.DefaultWorkingDirectory)'
             commandOptions: '-out=tfplan.output -var="resource_gp_name=$(StorageResourceGroup)"'
             environmentServiceNameAzureRM: 'AzureOPA Service Connection'
-            
-        #- script: terraform plan -var="subscription_id=$(subscription_id)" -var="tenant_id=$(tenant_id)" -var="client_id=$(client_id)" -var="client_secret=$(client_secret)" -var="resource_gp_name=$(StorageResourceGroup)" --out -no-color tfplan.output     
-        #  displayName: "Terraform plan"   
+             
         - task: CmdLine@2
           displayName: "OPA checks"
           inputs:
@@ -53,6 +48,7 @@ stages:
                echo "#############     OPA checks         ###############" 
                ./opa eval --fail-defined --data azurerules.rego --input tfplan.json "data.azurerules.$(oparule)" > oparesult.json
                cat oparesult.json
+               
         - task: PowerShell@2
           displayName: OPA - Terraform apply
           inputs:
