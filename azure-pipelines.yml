@@ -10,32 +10,12 @@ stages:
   jobs:
     - job: build
       steps:
-        - task: TerraformInstaller@0
-          inputs:
-            terraformVersion: '0.14.8'
-            
         - script:  az login -u $(userlogin_name) -p $(userlogin_password)
           displayName: "Log Into Azure"
+          
         
-        - task: TerraformTaskV1@0
-          displayName: "Terraform init"
-          inputs:
-            provider: 'azurerm'
-            command: 'init'
-            backendServiceArm: 'AzureOPA Service Connection'
-            backendAzureRmResourceGroupName: '$(StorageResourceGroup)'
-            backendAzureRmStorageAccountName: '$(StorageAccountName)'
-            backendAzureRmContainerName: '$(ContainerName)'
-            backendAzureRmKey: 'terraform.tfstate'
-
-        - task: TerraformTaskV1@0
-          displayName: "Terraform plan"
-          inputs:
-            provider: 'azurerm'
-            command: 'plan'
-            workingDirectory: '$(System.DefaultWorkingDirectory)'
-            commandOptions: '-out=tfplan.output -var="resource_gp_name=$(StorageResourceGroup)"'
-            environmentServiceNameAzureRM: 'AzureOPA Service Connection'
+        //Add your code here
+        
              
         - task: CmdLine@2
           displayName: "OPA Policy check"
