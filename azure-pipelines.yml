@@ -18,6 +18,7 @@ stages:
           displayName: "Log Into Azure"
         
         - task: TerraformTaskV1@0
+          displayName: "Terraform init"
           inputs:
             provider: 'azurerm'
             command: 'init'
@@ -28,6 +29,7 @@ stages:
             backendAzureRmKey: 'terraform.tfstate'
 
         - task: TerraformTaskV1@0
+          displayName: "Terraform plan"
           inputs:
             provider: 'azurerm'
             command: 'plan'
