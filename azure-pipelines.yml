@@ -38,7 +38,7 @@ stages:
             environmentServiceNameAzureRM: 'AzureOPA Service Connection'
              
         - task: CmdLine@2
-          displayName: "OPA checks"
+          displayName: "OPA Policy check"
           inputs:
             script: |    
                curl -L -o opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64
@@ -47,7 +47,7 @@ stages:
                sudo apt-get install jq
                jq -r ".resource_changes | map ({(.address|tostring) : .}) | add" tfplancomplete.json > tfplan.json
                cat tfplan.json
-               echo "#############     OPA checks         ###############" 
+               echo "#############     OPA check result         ###############" 
                ./opa eval --fail-defined --data azurerules.rego --input tfplan.json "data.azurerules.$(oparule)" > oparesult.json
                cat oparesult.json
                
@@ -72,4 +72,3 @@ stages:
                   Write-Host "OPA result value : $resultvalue"
                   Write-Host "OPA check failed $rule or There is no change in tfplan(resource already present) $actions"
                 }
-
