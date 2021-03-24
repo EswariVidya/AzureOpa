@@ -10,11 +10,11 @@ stages:
   jobs:
     - job: build
       steps:
-        - script:  az login -u $(userlogin_name) -p $(userlogin_password)
+        - script:  az login --service-principal -u $(client_id) -p $(client_secret) --tenant $(tenant_id)
           displayName: "Log Into Azure"
           
         
-        //Add your code here
+        #Add your code here
         
              
         - task: CmdLine@2
