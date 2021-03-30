@@ -11,7 +11,7 @@ stages:
     - job: build
       steps:
       
-        -  script : az login -u $(userlogin_name) -p $(userlogin_password)
+        -  script : az login -u $(userlogin_name) -p "$(userlogin_password)"
            displayName: "Login to Azure"
         #Add your code here
         
